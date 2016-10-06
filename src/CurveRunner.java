@@ -9,17 +9,22 @@ public class CurveRunner {
 
     }
 
-    // Curves the highest grade to 100 and adds the difference to each grade
-    public ArrayList<Integer> flatCurve(ArrayList<Integer> gradesToCurve) {
+    // Curve 1: Adds any amount of extra credit to each grade
+    public ArrayList<Integer> curveByAddingExtraCredit(ArrayList<Integer> gradesToCurve, int amountToAdd) {
+        for (int index = 0; index < gradesToCurve.size(); index++) {
+            gradesToCurve.set(index, gradesToCurve.get(index) + amountToAdd);
+        }
+
+        return gradesToCurve;
+    }
+
+
+    // Curve 2: Curves the highest grade to 100 and adds the difference to each grade
+    public ArrayList<Integer> curveFlat(ArrayList<Integer> gradesToCurve) {
         //Make sure all grades are valid? I think do this in controller instead.
 
         // Find maximum of list passed in
-        int maxGrade = gradesToCurve.get(0);
-        for (int index = 1; index < gradesToCurve.size(); index++) {
-            if (maxGrade < gradesToCurve.get(index)) {
-                maxGrade = gradesToCurve.get(index);
-            }
-        }
+        int maxGrade = getMaxScore(gradesToCurve);
 
         //Find the difference between maxGrade and 100
         int flatCurveAmount = 100 - maxGrade;
@@ -33,15 +38,43 @@ public class CurveRunner {
     }
 
 
-    // Adds any amount of extra credit to each grade
-    public ArrayList<Integer> addExtraCredit(ArrayList<Integer> gradesToCurve, int amountToAdd) {
+    // Curve 3: Curves the highest grade to 100% and other grades are computed as a percentage of the highest grade
+    public ArrayList<Integer> curveAsPercentageOfHighestGrade(ArrayList<Integer> gradesToCurve) {
+        int maxScore = getMaxScore(gradesToCurve);
+        double newGrade;
+        int newGradeInt;
         for (int index = 0; index < gradesToCurve.size(); index++) {
-            gradesToCurve.set(index, gradesToCurve.get(index) + amountToAdd);
+            newGrade = ((double)(gradesToCurve.get(index) * 100) / maxScore);
+            newGradeInt = (int)Math.round(newGrade);
+            gradesToCurve.set(index, newGradeInt);
         }
-
         return gradesToCurve;
-//        return new ArrayList<Integer>(Arrays.asList(-1, -1, -1));
+    }
+
+    // Curve 4: Multiply the square root of the grade by 10.
+    // (Rationalization: Take 81, for example. 81 is the same as 9 * 9.
+    //                   Instead of giving them 9 * 9, we give them 10 * 9.
+    //                   10 is √(100), where 100 is the highest grade.
+    public ArrayList<Integer> curveByTakingRoot(ArrayList<Integer> gradesToCurve) {
+        double newGrade;
+        int newGradeInt;
+        for (int index = 0; index < gradesToCurve.size(); index++) {
+            newGrade = (10 * Math.sqrt(gradesToCurve.get(index)));
+            newGradeInt = (int)Math.round(newGrade);
+            gradesToCurve.set(index, newGradeInt);
+        }
+        return gradesToCurve;
     }
 
 
+    // returns the highest grade in the array list
+    public int getMaxScore(ArrayList<Integer> grades) {
+        int maxGrade = grades.get(0);
+        for (int index = 1; index < grades.size(); index++) {
+            if (maxGrade < grades.get(index)) {
+                maxGrade = grades.get(index);
+            }
+        }
+        return maxGrade;
+    }
 }
